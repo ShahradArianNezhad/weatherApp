@@ -1,0 +1,105 @@
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="web.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>weather app</title>
+</head>
+<body>
+    <div class="card">
+        <div class="search">
+            <input type="text" placeholder="enter city name" class="cityInput">
+            <button onclick="checkWeather()"><img src="images/search.png"></button>
+        </div>
+        <div class="weather">
+            <img src="images/clear.png" class="weatherIcon">
+            <div class="tempbox">
+                <h1 class="temp"></h1>
+                <button class="temp-c" onclick="changeTempC()">°C</button><p>|</p><button class="temp-f" onclick="changeTempF()">°F</button>
+            </div>
+            <h2 class="city">New york</h2>
+            <div class="details">
+                <div class="col">
+                    <img src="images/humidity.png">
+                    <div>
+                        <p class="humidity">50%</p>
+                        <p>Humidity</p>
+                    </div>
+                </div>
+                <div class="col">
+                    <img src="images/wind.png">
+                    <div>
+                        <p class="wind">15 km/h</p>
+                        <p>wind speed</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        let unit;
+        const apiKey= '9af98742d3319168834d05eb730571ec'
+        const apiUrl= 'https://api.openweathermap.org/data/2.5/weather?&appid=9af98742d3319168834d05eb730571ec&units=metric';
+
+        document.querySelector('.cityInput').value='New york'
+        checkWeather()
+
+        const buttonC=document.querySelector(".temp-c")
+        const buttonF=document.querySelector(".temp-f")
+        buttonC.classList.add('active')
+        buttonF.classList.add('inactive')
+
+
+
+        async function checkWeather(){
+            city = document.querySelector('.cityInput').value
+            const response = await fetch(apiUrl+`&q=${city}`);
+            var data = await response.json()
+            console.log(data)
+            if(data.name===undefined){return true}
+            document.querySelector('.city').innerHTML=data.name
+            document.querySelector('.temp').innerHTML=parseFloat(data.main.temp,10).toFixed(1)
+            unit='C'
+            document.querySelector('.humidity').innerHTML=data.main.humidity+'%'
+            document.querySelector('.wind').innerHTML=data.wind.speed
+            apiIcon=data.weather[0].main
+            document.querySelector('.weatherIcon').setAttribute('src', `images/${apiIcon}.png`);
+            document.querySelector('.cityInput').value=''
+        };
+
+        document.querySelector('.cityInput').addEventListener('keydown',function(event){
+            if(event.key==='Enter'){checkWeather()}
+        })
+
+        function changeTempF(){
+            if(unit==='F'){
+                return true
+            }
+            let C =document.querySelector('.temp').innerHTML
+            F = (parseFloat(C)*9/5+32).toFixed(1)
+            document.querySelector('.temp').innerHTML = F
+            unit='F'
+            buttonF.classList.remove('inactive')
+            buttonF.classList.add('active')
+            buttonC.classList.remove('active')
+            buttonC.classList.add('inactive')            
+        }
+        function changeTempC(){
+            if(unit==='C'){
+                return true
+            }
+            let F =document.querySelector('.temp').innerHTML
+            C = ((parseFloat(F)-32)*5/9).toFixed(1)
+            document.querySelector('.temp').innerHTML = C
+            unit='C'
+            buttonC.classList.remove('inactive')
+            buttonC.classList.add('active')
+            buttonF.classList.remove('active')
+            buttonF.classList.add('inactive')                
+        }
+        
+
+
+    </script>
+</body>
+</html>
